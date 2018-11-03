@@ -1,0 +1,55 @@
+{
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "adjDate",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "name",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "serial",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "price",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "factorOne",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "factorTwo",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "factorThree",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "tax",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "total",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "classification",
+            "fieldType": "CarClass",
+            "fieldValues": "AAA,BBB,CCC,DDD,EEE"
+        }
+    ],
+    "changelogDate": "20181013181031",
+    "dto": "mapstruct",
+    "searchEngine": false,
+    "service": "serviceImpl",
+    "entityTableName": "price",
+    "jpaMetamodelFiltering": true,
+    "pagination": "infinite-scroll"
+}

@@ -1,0 +1,99 @@
+// JDL definition for application 'newprj' generated with command 'jhipster export-jdl'
+
+entity Car {
+  name String,
+  serial String,
+  manufacturer String,
+  model LocalDate,
+  color String,
+  classification CarClass
+}
+
+entity Price {
+  adjDate LocalDate,
+  name String,
+  serial String,
+  price Double,
+  factorOne Integer,
+  factorTwo Integer,
+  factorThree Integer,
+  tax Double,
+  total Double,
+  classification CarClass
+}
+/**
+ * not an ignored comment
+ */
+entity Contact {
+  phoneNumber String,
+  birthday LocalDate,
+  addressOne String,
+  addressTwo String,
+  postalCode String,
+  city String,
+  stateProvince String,
+  countryName String
+}
+entity RentHistory {
+  regDate LocalDate,
+  startDate LocalDate,
+  endDate LocalDate,
+  totalPaid Double,
+  status Status
+}
+entity Album {
+  title String required,
+  description TextBlob,
+  created Instant
+}
+entity Photo {
+  title String required,
+  description TextBlob,
+  image ImageBlob required,
+  height Integer,
+  width Integer,
+  taken Instant,
+  uploaded Instant
+}
+entity Tag {
+  name String required minlength(2)
+}
+
+enum CarClass {
+  AAA,
+  BBB,
+  CCC,
+  DDD,
+  EEE
+}
+
+enum Status {
+  RUNNING,
+  PENDING,
+  PAYED,
+  CANCELLED,
+  DELETED
+}
+
+relationship OneToOne {
+  Car{album} to Album,
+  Car{photo} to Photo,
+  Contact{client} to User,
+  Contact{photo} to Photo
+}
+relationship ManyToOne {
+  RentHistory{client} to User,
+  Album{user} to User,
+  Photo{user} to User,
+  Photo{album(title)} to Album
+}
+relationship ManyToMany {
+  Car{tag(name)} to Tag,
+  RentHistory{car} to Car,
+  Photo{tag(name)} to Tag
+}
+
+dto Car, Contact, RentHistory, Album, Photo, Tag with mapstruct
+service Car, Contact, RentHistory, Album, Photo, Tag with serviceImpl
+paginate RentHistory, Photo, Tag with infinite-scroll
+paginate Album with pagination

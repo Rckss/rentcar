@@ -1,0 +1,92 @@
+
+entity Car {
+	name String
+    serial String
+    manufacturer String
+    model LocalDate
+    color String
+    classification CarClass
+}
+
+// an ignored comment
+/** not an ignored comment */
+entity Contact {
+	phoneNumber String,
+	birthday LocalDate
+	addressOne String,
+    addressTwo String,
+	postalCode String,
+	city String,
+	stateProvince String,
+    countryName String
+}
+
+entity RentHistory {
+	regDate LocalDate,
+	startDate LocalDate,
+	endDate LocalDate,
+    totalPaid Double,
+    status Status
+}
+
+enum CarClass{
+	AAA,
+	BBB,
+    CCC,
+    DDD,
+    EEE
+}
+
+enum Status{
+	RUNNING,
+	PENDING,
+    PAYED,
+    CANCELLED,
+    DELETED
+}
+
+entity Album {
+    title String required,
+    description TextBlob,
+    created Instant
+}
+
+entity Photo {
+    title String required,
+    description TextBlob,
+    image ImageBlob required,
+    height Integer,
+    width Integer,
+    taken Instant,
+    uploaded Instant
+}
+
+entity Tag {
+    name String required minlength(2)
+}
+
+// defining multiple oneToOne relationships
+relationship OneToOne {
+	RentHistory{cars} to Car,
+	RentHistory{client} to User,
+    Photo to User,
+    Car{album} to Album
+}
+
+relationship ManyToOne {
+    Photo{album(title)} to Album,
+    Contact{client} to User
+}
+
+relationship ManyToMany {
+    Photo{tag(name)} to Tag,
+	Car{tag(name)} to Tag
+}
+
+// Set pagination options
+paginate Album with pagination
+paginate RentHistory, Photo, Tag with infinite-scroll
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl

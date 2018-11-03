@@ -1,0 +1,53 @@
+{
+    "name": "RentHistory",
+    "fields": [
+        {
+            "fieldName": "regDate",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "startDate",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "endDate",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "totalPaid",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "status",
+            "fieldType": "Status",
+            "fieldValues": "RUNNING,PENDING,PAYED,CANCELLED,DELETED"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-many",
+            "relationshipName": "car",
+            "otherEntityName": "car",
+            "otherEntityField": "id",
+            "ownerSide": true,
+            "otherEntityRelationshipName": ""
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "client",
+            "otherEntityName": "user",
+            "otherEntityField": "id",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "rentHistory"
+        }
+    ],
+    "changelogDate": "20180929183950",
+    "entityTableName": "rent_history",
+    "dto": "mapstruct",
+    "pagination": "infinite-scroll",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

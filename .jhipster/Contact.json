@@ -1,0 +1,65 @@
+{
+    "name": "Contact",
+    "fields": [
+        {
+            "fieldName": "phoneNumber",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "birthday",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "addressOne",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "addressTwo",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "postalCode",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "city",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "stateProvince",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "countryName",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-one",
+            "relationshipName": "client",
+            "otherEntityName": "user",
+            "otherEntityField": "id",
+          "ownerSide": true,
+          "otherEntityRelationshipName": "contact"
+        },
+      {
+        "relationshipType": "one-to-one",
+        "relationshipName": "photo",
+        "otherEntityName": "photo",
+        "otherEntityField": "id",
+        "ownerSide": true,
+        "otherEntityRelationshipName": "contact"
+      }
+    ],
+    "changelogDate": "20180929183949",
+    "javadoc": "not an ignored comment",
+    "entityTableName": "contact",
+    "dto": "mapstruct",
+    "pagination": "no",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

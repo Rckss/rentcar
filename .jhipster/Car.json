@@ -1,0 +1,65 @@
+{
+    "name": "Car",
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "serial",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "manufacturer",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "model",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "color",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "classification",
+            "fieldType": "CarClass",
+            "fieldValues": "AAA,BBB,CCC,DDD,EEE"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-one",
+            "relationshipName": "album",
+            "otherEntityName": "album",
+            "otherEntityField": "id",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "car"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "",
+            "relationshipName": "tag",
+            "otherEntityName": "tag",
+            "otherEntityField": "name",
+            "ownerSide": true
+        },
+        {
+          "relationshipType": "one-to-one",
+          "relationshipName": "photo",
+          "otherEntityName": "photo",
+          "otherEntityField": "id",
+          "ownerSide": true,
+          "otherEntityRelationshipName": "contact"
+        }
+    ],
+    "changelogDate": "20180929183948",
+    "entityTableName": "car",
+    "dto": "mapstruct",
+    "pagination": "no",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}
