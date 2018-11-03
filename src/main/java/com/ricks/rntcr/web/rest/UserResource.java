@@ -1,5 +1,6 @@
 package com.ricks.rntcr.web.rest;
 
+import com.codahale.metrics.annotation.Timed;
 import com.ricks.rntcr.config.Constants;
 import com.ricks.rntcr.domain.User;
 import com.ricks.rntcr.repository.UserRepository;
@@ -12,9 +13,7 @@ import com.ricks.rntcr.web.rest.errors.EmailAlreadyUsedException;
 import com.ricks.rntcr.web.rest.errors.LoginAlreadyUsedException;
 import com.ricks.rntcr.web.rest.util.HeaderUtil;
 import com.ricks.rntcr.web.rest.util.PaginationUtil;
-import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.web.util.ResponseUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -28,7 +27,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+
+import static com.ricks.rntcr.security.SecurityUtils.getCurrentUserLogin;
 
 /**
  * REST controller for managing users.
@@ -184,6 +186,164 @@ public class UserResource {
     @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Void> deleteUser(@PathVariable String login) {
         log.debug("REST request to delete User: {}", login);
+        userService.deleteUser(login);
+        return ResponseEntity.ok().headers(HeaderUtil.createAlert( "A user is deleted with identifier " + login, login)).build();
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    // Restricted user gateway
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * POST  /users  : Creates a new user.
+     * <p>
+     * Creates a new user if the login and email are not already used, and sends an
+     * mail with an activation link.
+     * The user needs to be activated on creation.
+     *
+     * @param userDTO the user to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new user, or with status 400 (Bad Request) if the login or email is already in use
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @throws BadRequestAlertException 400 (Bad Request) if the login or email is already in use
+     */
+    @PostMapping("/usr")
+    @Timed
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<User> createUsr(@Valid @RequestBody UserDTO userDTO) throws URISyntaxException {
+        log.debug("REST request to save User : {}", userDTO);
+
+        if (userDTO.getId() != null) {
+            throw new BadRequestAlertException("A new user cannot already have an ID", "userManagement", "idexists");
+            // Lowercase the user login before comparing with database
+        } else if (userRepository.findOneByLogin(userDTO.getLogin().toLowerCase()).isPresent()) {
+            throw new LoginAlreadyUsedException();
+        } else if (userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).isPresent()) {
+            throw new EmailAlreadyUsedException();
+        } else {
+            User newUser = userService.createUser(userDTO);
+            mailService.sendCreationEmail(newUser);
+            return ResponseEntity.created(new URI("/api/usr/" + newUser.getLogin()))
+                .headers(HeaderUtil.createAlert( "A user is created with identifier " + newUser.getLogin(), newUser.getLogin()))
+                .body(newUser);
+        }
+    }
+
+    /* ADMIN restriction snipt
+           // added by me
+        // get current logged user and save contact with associated logged user
+        if(isAuthenticated() && getCurrentUserLogin().get() != "admin") {
+            User user = new User();
+            // findOneByLogin & getCurrentUserLogin return Optional box use get()
+            // remember to implement null case here
+            user = userRepo.findOneByLogin(getCurrentUserLogin().get()).get();
+            contactDTO.setClientId(
+                user.getId()
+            );
+            log.debug("==> New contact for {} user.", getCurrentUserLogin().get());
+        }
+        // end
+     */
+
+    /**
+     * PUT /users : Updates an existing User.
+     *
+     * @param userDTO the user to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated user
+     * @throws EmailAlreadyUsedException 400 (Bad Request) if the email is already in use
+     * @throws LoginAlreadyUsedException 400 (Bad Request) if the login is already in use
+     */
+    @PutMapping("/usr")
+    @Timed
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<UserDTO> updateUsr(@Valid @RequestBody UserDTO userDTO) {
+        log.debug("REST request to update User : {}", userDTO);
+        // if not the owner throws exception
+        if(getCurrentUserLogin().get() != userDTO.getLogin()){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Optional<User> existingUser = userRepository.findOneByEmailIgnoreCase(userDTO.getEmail());
+        // first check for existing emails before update.
+        if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
+            throw new EmailAlreadyUsedException();
+        }
+        // them check if user exists with the same name.
+        existingUser = userRepository.findOneByLogin(userDTO.getLogin().toLowerCase());
+        if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
+            throw new LoginAlreadyUsedException();
+        }
+        // throws exception if updating account isnt owned by logged user!
+        if(getCurrentUserLogin().get() != existingUser.get().getLogin()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Optional<UserDTO> updatedUser = userService.updateUser(userDTO);
+
+        return ResponseUtil.wrapOrNotFound(updatedUser,
+            HeaderUtil.createAlert("A user is updated with identifier " + userDTO.getLogin(), userDTO.getLogin()));
+    }
+
+    /**
+     * GET /users : get logged user
+     *
+     * @param pageable the pagination information
+     * @return the ResponseEntity with status 200 (OK) and with body all users
+     */
+    @GetMapping("/usr")
+    @Timed
+    public ResponseEntity<List<UserDTO>> getAllUsrs(Pageable pageable) {
+        // added by me
+        // changed to call on new queries
+        User user = userService.getUserWithAuthoritiesByLogin(getCurrentUserLogin().get()).get();
+        Long id = user.getId();
+        // -----------------------------------------------
+        // final Page<UserDTO> page = userService.getAllManagedUsers(pageable);
+        final Page<UserDTO> page = userService.getPagedUser(pageable, id);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    /**
+     * GET /users/:login : get the "login" user.
+     *
+     * @param login the login of the user to find
+     * @return the ResponseEntity with status 200 (OK) and with body the "login" user, or with status 404 (Not Found)
+     */
+    @GetMapping("/usr/{login:" + Constants.LOGIN_REGEX + "}")
+    @Timed
+    public ResponseEntity<UserDTO> getUsr(@PathVariable String login) {
+        log.debug("REST request to get User : {} and logged with {}", login, getCurrentUserLogin().get());
+        // if not the owner throws exception
+        if(!getCurrentUserLogin().get().equals(login)){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Optional<UserDTO> result = userService.getUserWithAuthoritiesByLogin(login).map(UserDTO::new);
+        return ResponseUtil.wrapOrNotFound(result);
+    }
+
+    /**
+     * @return a string list of the all of the roles
+     */
+    @GetMapping("/usr/authorities")
+    @Timed
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public List<String> getusrAuthorities() {
+        return userService.getAuthorities();
+    }
+
+    /**
+     * DELETE /users/:login : delete the "login" User.
+     *
+     * @param login the login of the user to delete
+     * @return the ResponseEntity with status 200 (OK)
+     * make hide, not really be deleted! in the future
+     * restricted only for the same user!
+     */
+    @DeleteMapping("/usr/{login:" + Constants.LOGIN_REGEX + "}")
+    @Timed
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<Void> deleteUsr(@PathVariable String login) {
+        log.debug("REST request to delete User: {}", login);
+        // if not the owner throws exception
+        if(getCurrentUserLogin().get() != login){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         userService.deleteUser(login);
         return ResponseEntity.ok().headers(HeaderUtil.createAlert( "A user is deleted with identifier " + login, login)).build();
     }

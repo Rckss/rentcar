@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <property name="now" value="now()" dbms="h2"/>
+
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="autoIncrement" value="true"/>
+
+    <property name="floatType" value="float4" dbms="postgresql, h2"/>
+    <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
+
+    <!--
+        Added the entity Car.
+    -->
+    <changeSet id="20180929183948-1" author="jhipster">
+        <createTable tableName="car">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="serial" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="manufacturer" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="model" type="date">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="color" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="classification" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="album_id" type="bigint">
+                <constraints unique="true" nullable="true" uniqueConstraintName="ux_car_album_id" />
+            </column>            <column name="photo_id" type="bigint">
+                <constraints unique="true" nullable="true" uniqueConstraintName="ux_car_photo_id" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
+        </createTable>
+        
+        <createTable tableName="car_tag">
+            <column name="tags_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cars_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="cars_id, tags_id" tableName="car_tag"/>
+        
+    </changeSet>
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->
+</databaseChangeLog>

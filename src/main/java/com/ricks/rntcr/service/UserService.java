@@ -9,8 +9,9 @@ import com.ricks.rntcr.security.AuthoritiesConstants;
 import com.ricks.rntcr.security.SecurityUtils;
 import com.ricks.rntcr.service.dto.UserDTO;
 import com.ricks.rntcr.service.util.RandomUtil;
-import com.ricks.rntcr.web.rest.errors.*;
-
+import com.ricks.rntcr.web.rest.errors.EmailAlreadyUsedException;
+import com.ricks.rntcr.web.rest.errors.InvalidPasswordException;
+import com.ricks.rntcr.web.rest.errors.LoginAlreadyUsedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
@@ -246,6 +247,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllManagedUsers(Pageable pageable) {
         return userRepository.findAllByLoginNot(pageable, Constants.ANONYMOUS_USER).map(UserDTO::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserDTO> getPagedUser(Pageable pageable, Long id) {
+        return userRepository.getPagedUser(pageable, id).map(UserDTO::new);
     }
 
     @Transactional(readOnly = true)

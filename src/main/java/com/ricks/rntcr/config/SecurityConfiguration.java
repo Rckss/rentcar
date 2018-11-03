@@ -1,8 +1,8 @@
 package com.ricks.rntcr.config;
 
-import com.ricks.rntcr.security.*;
-import com.ricks.rntcr.security.jwt.*;
-
+import com.ricks.rntcr.security.AuthoritiesConstants;
+import com.ricks.rntcr.security.jwt.JWTConfigurer;
+import com.ricks.rntcr.security.jwt.TokenProvider;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -83,6 +83,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers("/test/**");
     }
 
+    // security Rules here!!!
+    // permitAll() - no need authentication.
+    // authenticated() - need authorization and authentication.
+    // hasAuthority() - define who can access.
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
@@ -96,12 +100,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .headers()
             .frameOptions()
             .disable()
+            //add by me
+            /*
+        .and()
+            .requiresChannel()
+            .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
+            .requiresSecure()
+            */
+            // end
         .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
             .authorizeRequests()
             .antMatchers("/api/register").permitAll()
+            .antMatchers("/res/**").permitAll()
             .antMatchers("/api/activate").permitAll()
             .antMatchers("/api/authenticate").permitAll()
             .antMatchers("/api/account/reset-password/init").permitAll()

@@ -1,6 +1,6 @@
 {
-  "name": "newprj",
-  "short_name": "newprj",
+  "name": "Rent a Car",
+  "short_name": "Rent Car",
   "icons": [
       {
           "src": "./content/images/hipster192.png",
