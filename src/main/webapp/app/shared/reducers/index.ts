@@ -12,22 +12,22 @@ import password, { PasswordState } from 'app/modules/account/password/password.r
 import settings, { SettingsState } from 'app/modules/account/settings/settings.reducer';
 import passwordReset, { PasswordResetState } from 'app/modules/account/password-reset/password-reset.reducer';
 // prettier-ignore
-import car, {CarState} from 'app/entities/car/car.reducer';
+import car, { CarState } from 'app/entities/car/car.reducer';
 // prettier-ignore
-import contact, {ContactState} from 'app/entities/contact/contact.reducer';
+import contact, { ContactState } from 'app/entities/contact/contact.reducer';
 // prettier-ignore
-import rentHistory, {RentHistoryState} from 'app/entities/rent-history/rent-history.reducer';
+import rentHistory, { RentHistoryState } from 'app/entities/rent-history/rent-history.reducer';
 // prettier-ignore
-import album, {AlbumState} from 'app/entities/album/album.reducer';
+import album, { AlbumState } from 'app/entities/album/album.reducer';
 // prettier-ignore
-import photo, {PhotoState} from 'app/entities/photo/photo.reducer';
+import photo, { PhotoState } from 'app/entities/photo/photo.reducer';
 // prettier-ignore
-import tag, {TagState} from 'app/entities/tag/tag.reducer';
+import tag, { TagState } from 'app/entities/tag/tag.reducer';
 // prettier-ignore
-import price, {PriceState} from 'app/entities/price/price.reducer';
+import price, { PriceState } from 'app/entities/price/price.reducer';
 // prettier-ignore
 // added by me
-import homeGallery, {HomeGalleryState} from 'app/modules/home/home-gallery/home-gallery.reducer';
+import homeGallery, { HomeGalleryState } from 'app/modules/home/home-gallery/home-gallery.reducer';
 import rentModal, { RentModalHistoryState } from 'app/usr/rent-history/helper/rent-modal.reducer';
 import carent, { CarentState } from 'app/usr/carent/car.reducer';
 import fcar, { fcarState } from 'app/usr/details/fcar.reducer';
