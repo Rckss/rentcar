@@ -96,7 +96,6 @@ export default (state: ContactState = initialState, action): ContactState => {
 };
 
 const apiUrl = 'api/contactsbyuser';
-
 // Actions
 
 export const getEntities: ICrudGetAllAction<IContact> = (page, size, sort) => ({
@@ -106,6 +105,14 @@ export const getEntities: ICrudGetAllAction<IContact> = (page, size, sort) => ({
 
 export const getEntity: ICrudGetAction<IContact> = id => {
   const requestUrl = `${apiUrl}/${id}`;
+  return {
+    type: ACTION_TYPES.FETCH_CONTACT,
+    payload: axios.get<IContact>(requestUrl)
+  };
+};
+
+export const getContact: ICrudGetAction<IContact> = id => {
+  const requestUrl = `api/getselfcontact`;
   return {
     type: ACTION_TYPES.FETCH_CONTACT,
     payload: axios.get<IContact>(requestUrl)
