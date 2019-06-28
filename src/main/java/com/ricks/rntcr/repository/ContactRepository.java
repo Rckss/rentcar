@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+import java.util.Optional;
 
 /**
  * Spring Data  repository for the Contact entity.
@@ -19,4 +19,6 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     @Query("select distinct contact from Contact contact where contact.client.id = :id")
     List<Contact> findAll(@Param("id") Long id);
 
+    @Query("select contact from Contact contact where contact.client.id = :id")
+    Optional<Contact> findByUserId(@Param("id") Long id);
 }

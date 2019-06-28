@@ -3,30 +3,48 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row } from 'reactstrap';
 // tslint:disable-next-line:no-unused-variable
-import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
-import { getEntity } from './car.reducer';
+import { getEntity, fetchCarAndPhoto } from './car.reducer';
 // tslint:disable-next-line:no-unused-variable
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { getEntities as getPhotoEntities } from 'app/usr/photo/photo.reducer';
+import { openFile, byteSize, TextFormat } from 'react-jhipster';
 
 export interface ICarDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export class CarDetail extends React.Component<ICarDetailProps> {
   componentDidMount() {
-    this.props.getEntity(this.props.match.params.id);
+    // this.props.getEntity(this.props.match.params.id);
+    this.props.fetchCarAndPhoto(this.props.match.params.id);
   }
   /* don't forget:
-    -make show first album photo as main photo
+    -make show all album photos from this specific car.
     and display rent button
   */
 
   render() {
-    const { carEntity } = this.props;
+    const { carEntity, photoEntity } = this.props;
     return (
       <Row>
         <Col md="8">
+          <div>
+            {photoEntity.map((photo, i) => (
+              <div key={`entity-${i}`}>
+                <div>
+                  {photo.image ? (
+                    <div>
+                      <a onClick={openFile(photo.imageContentType, photo.image)}>
+                        <img src={`data:${photo.imageContentType};base64,${photo.image}`} style={{ maxHeight: '60px' }} />
+                        &nbsp;
+                      </a>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </div>
           <dl className="jh-entity-details">
             <dt>
               <span id="name">
@@ -83,11 +101,12 @@ export class CarDetail extends React.Component<ICarDetailProps> {
   }
 }
 
-const mapStateToProps = ({ car }: IRootState) => ({
-  carEntity: car.entity
+const mapStateToProps = ({ car, photo }: IRootState) => ({
+  carEntity: car.entity,
+  photoEntity: photo.entities
 });
 
-const mapDispatchToProps = { getEntity };
+const mapDispatchToProps = { getEntity, getPhotoEntities, fetchCarAndPhoto };
 
 type StateProps = ReturnType<typeof mapStateToProps>;
 type DispatchProps = typeof mapDispatchToProps;

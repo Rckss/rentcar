@@ -245,4 +245,123 @@ public class AlbumResource {
         albumService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
+
+    // ------------------------------------------------------------------------------------------------------------------
+    // dont forget to change all methods here to return only Albums without users
+    // change in the future to query only albums created by the seller, and only from respective car album pair.
+    /**
+     * POST  /albums : Create a new album.
+     *
+     * @param albumDTO the albumDTO to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new albumDTO, or with status 400 (Bad Request) if the album has already an ID
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PostMapping("/albumsnouser")
+    @Timed
+    public ResponseEntity<AlbumDTO> createAlbumNoUser(@Valid @RequestBody AlbumDTO albumDTO) throws URISyntaxException {
+        log.debug("REST request to save Album : {}", albumDTO);
+        if (albumDTO.getId() != null) {
+            throw new BadRequestAlertException("A new album cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        // added from me
+        // get logged userID and associate with new photo
+        //User user = userRepo.findOneByLogin(getCurrentUserLogin().get()).get();
+        //photoDTO.setUserId(user.getId());
+        // set from service not from repo
+        //User user = usrServ.getUserWithAuthoritiesByLogin(getCurrentUserLogin().get()).get();
+        albumDTO.setUserId(null);
+        AlbumDTO result = albumService.save(albumDTO);
+        return ResponseEntity.created(new URI("/api/albumsnouser/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+
+    /**
+     * PUT  /albums : Updates an existing album.
+     *
+     * @param albumDTO the albumDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated albumDTO,
+     * or with status 400 (Bad Request) if the albumDTO is not valid,
+     * or with status 500 (Internal Server Error) if the albumDTO couldn't be updated
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PutMapping("/albumsnouser")
+    @Timed
+    public ResponseEntity<AlbumDTO> updateAlbumNoUser(@Valid @RequestBody AlbumDTO albumDTO) throws URISyntaxException {
+        log.debug("REST request to update Album : {}", albumDTO);
+        if (albumDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        // added from me
+        // throws forbidden access error if try to access not owned resources
+        //User user = usrServ.getUserWithAuthoritiesByLogin(getCurrentUserLogin().get()).get();
+        if ( albumDTO.getUserId() != null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        AlbumDTO result = albumService.save(albumDTO);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, albumDTO.getId().toString()))
+            .body(result);
+    }
+
+    /**
+     * GET  /albums : get all the albums.
+     *
+     * @param pageable the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of albums in body
+     */
+    @GetMapping("/albumsnouser")
+    @Timed
+    public ResponseEntity<List<AlbumDTO>> getAllAlbumsNoUser(Pageable pageable) {
+        log.debug("REST request to get a page of Albums");
+        // modifiyed by me
+        // changed to call on new queries
+        //User user = usrServ.getUserWithAuthoritiesByLogin(getCurrentUserLogin().get()).get();
+        //Long id = user.getId();
+        Page<AlbumDTO> page = albumService.findAllWithNullId(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/albumsnouser");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    /**
+     * GET  /albums/:id : get the "id" album.
+     *
+     * @param id the id of the albumDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the albumDTO, or with status 404 (Not Found)
+     */
+    @GetMapping("/albumsnouser/{id}")
+    @Timed
+    public ResponseEntity<AlbumDTO> getAlbumNoUser(@PathVariable Long id) {
+        log.debug("REST request to get Album : {}", id);
+        Optional<AlbumDTO> albumDTO = albumService.findOne(id);
+        // added from me
+        // throws forbidden access error if try to access not owned resources
+        User user = usrServ.getUserWithAuthoritiesByLogin(getCurrentUserLogin().get()).get();
+        if ( albumDTO.get().getUserId() != null ) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return ResponseUtil.wrapOrNotFound(albumDTO);
+    }
+
+    /**
+     * DELETE  /albums/:id : delete the "id" album.
+     *
+     * @param id the id of the albumDTO to delete
+     * @return the ResponseEntity with status 200 (OK)
+     */
+    @DeleteMapping("/albumsnouser/{id}")
+    @Timed
+    public ResponseEntity<Void> deleteAlbumNoUser(@PathVariable Long id) {
+        log.debug("REST request to delete Album : {}", id);
+        Optional<AlbumDTO> albumDTO = albumService.findOne(id);
+        // added from me
+        // throws forbidden access error if try to access not owned resources
+        User user = usrServ.getUserWithAuthoritiesByLogin(getCurrentUserLogin().get()).get();
+        if ( albumDTO.get().getUserId() != null ) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        albumService.delete(id);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+    }
+
 }

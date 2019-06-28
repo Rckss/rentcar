@@ -10,6 +10,9 @@ const accountMenuItemsAuthenticated = (
     <DropdownItem tag={Link} to="/account/settings">
       <FontAwesomeIcon icon="wrench" /> Settings
     </DropdownItem>
+    <DropdownItem tag={Link} to="/configurations/contact/selfprofile">
+      <FontAwesomeIcon icon="wrench" /> Contact
+    </DropdownItem>
     <DropdownItem tag={Link} to="/account/password">
       <FontAwesomeIcon icon="clock" /> Password
     </DropdownItem>

@@ -7,7 +7,7 @@ import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
-import { getEntity } from './contact.reducer';
+import { getEntity, getContact } from './contact.reducer';
 // tslint:disable-next-line:no-unused-variable
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { getEntity as getPhoto } from 'app/usr/photo/photo.reducer';
@@ -17,7 +17,8 @@ export interface IContactDetailProps extends StateProps, DispatchProps, RouteCom
 
 export class ContactDetail extends React.Component<IContactDetailProps> {
   componentDidMount() {
-    this.props.getEntity(this.props.match.params.id);
+    // this.props.getEntity(this.props.match.params.id);
+    this.props.getContact(this.props.match.params.id);
   }
 
   render() {
@@ -87,7 +88,7 @@ const mapStateToProps = ({ contact, photo }: IRootState) => ({
   photoEntity: photo.entity
 });
 
-const mapDispatchToProps = { getEntity, getPhoto };
+const mapDispatchToProps = { getEntity, getPhoto, getContact };
 
 type StateProps = ReturnType<typeof mapStateToProps>;
 type DispatchProps = typeof mapDispatchToProps;

@@ -5,12 +5,14 @@ import ErrorBoundaryRoute from 'app/shared/error/error-boundary-route';
 
 import Contact from './contact';
 import ContactDetail from './contact-detail';
+import Profile from './profile';
 import ContactUpdate from './contact-update';
 import ContactDeleteDialog from './contact-delete-dialog';
 
 const Routes = ({ match }) => (
   <>
     <Switch>
+      <ErrorBoundaryRoute exact path={`${match.url}/selfprofile`} component={Profile} />
       <ErrorBoundaryRoute exact path={`${match.url}/new`} component={ContactUpdate} />
       <ErrorBoundaryRoute exact path={`${match.url}/:id/edit`} component={ContactUpdate} />
       <ErrorBoundaryRoute exact path={`${match.url}/:id`} component={ContactDetail} />

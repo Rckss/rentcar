@@ -1,3 +1,5 @@
+// not working :( noway to know what is the shiit problem of this route
+// I give up this.
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';

@@ -68,6 +68,14 @@ public class AlbumServiceImpl implements AlbumService {
             .map(albumMapper::toDto);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AlbumDTO> findAllWithNullId(Pageable pageable) {
+        log.debug("Request to get all Albums");
+        return albumRepository.findAllWithNullId(pageable)
+            .map(albumMapper::toDto);
+    }
+
     /**
      * Get one album by id.
      *

@@ -121,7 +121,6 @@ export default (state: PhotoState = initialState, action): PhotoState => {
 const apiUrl = 'api/photosbyuser';
 
 // Actions
-
 export const getEntities: ICrudGetAllAction<IPhoto> = (page, size, sort) => {
   const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}` : ''}`;
   return {

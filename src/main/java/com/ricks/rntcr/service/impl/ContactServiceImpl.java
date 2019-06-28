@@ -85,6 +85,13 @@ public class ContactServiceImpl implements ContactService {
             .map(contactMapper::toDto);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<ContactDTO> findByUserId(Long id) {
+        log.debug("Request to get Contact : {}", id);
+        return contactRepository.findByUserId(id)
+            .map(contactMapper::toDto);
+    }
     /**
      * Delete the contact by id.
      *

@@ -34,6 +34,7 @@ public interface ContactService {
      */
     Optional<ContactDTO> findOne(Long id);
 
+    Optional<ContactDTO> findByUserId(Long id);
     /**
      * Delete the "id" contact.
      *

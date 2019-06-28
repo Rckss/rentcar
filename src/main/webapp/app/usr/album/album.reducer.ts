@@ -108,7 +108,7 @@ export default (state: AlbumState = initialState, action): AlbumState => {
   }
 };
 
-const apiUrl = 'api/albumsbyuser';
+const apiUrl = 'api/albumsnouser';
 
 // Actions
 

@@ -5,6 +5,9 @@ import { cleanEntity } from 'app/shared/util/entity-utils';
 import { FAILURE, REQUEST, SUCCESS } from 'app/shared/reducers/action-type.util';
 
 import { defaultValue, ICar } from 'app/shared/model/car.model';
+import { getSession } from 'app/shared/reducers/authentication';
+import { getEntities as getPhotoEntities } from 'app/usr/photo/photo.reducer';
+import { getEntitiesById as getAlbumPhotosEntities } from 'app/usr/album/photosByAlbum/photo.reducer';
 
 export const ACTION_TYPES = {
   FETCH_CAR_LIST: 'car/FETCH_CAR_LIST',
@@ -138,6 +141,13 @@ export const deleteEntity: ICrudDeleteAction<ICar> = id => async dispatch => {
   });
   dispatch(getEntities());
   return result;
+};
+
+export const fetchCarAndPhoto = id => async dispatch => {
+  await dispatch(getEntity(id)).then(
+    // need to get the main picture of the car by Album & car's picture.id criteria
+    dispatch(getAlbumPhotosEntities(1))
+  );
 };
 
 export const reset = () => ({

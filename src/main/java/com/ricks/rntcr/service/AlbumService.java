@@ -44,4 +44,6 @@ public interface AlbumService {
     void delete(Long id);
 
     Page<AlbumDTO> findAll(Pageable pageable, Long id);
+
+    Page<AlbumDTO> findAllWithNullId(Pageable pageable);
 }

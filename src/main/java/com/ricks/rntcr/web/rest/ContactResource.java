@@ -214,6 +214,21 @@ public class ContactResource {
         return ResponseUtil.wrapOrNotFound(contactDTO);
     }
 
+    // getselfcontact
+    @GetMapping("/getselfcontact")
+    @Timed
+    public ResponseEntity<ContactDTO> getSelfContact() {
+        User user = usrServ.getUserWithAuthoritiesByLogin(getCurrentUserLogin().get()).get();
+        // Long id = user.getId();
+        Optional<ContactDTO> contactDTO = contactService.findByUserId(user.getId());
+        log.debug("REST request to get Contact : {}", user.getId());
+        // add condition tobe logged;
+        if (contactDTO == null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return ResponseUtil.wrapOrNotFound(contactDTO);
+    }
+
     /**
      * DELETE  /contacts/:id : delete the "id" contact.
      *

@@ -23,4 +23,8 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     @Query(value = "select distinct album from Album album where album.user.id = :id",
         countQuery = "select count(distinct album) from Album album")
     Page<Album> findAll(Pageable pageable, @Param("id") Long id);
+
+    @Query(value = "select distinct album from Album album where album.user.id = null",
+        countQuery = "select count(distinct album) from Album album")
+    Page<Album> findAllWithNullId(Pageable pageable);
 }
